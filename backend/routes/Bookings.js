@@ -55,4 +55,34 @@ router.get("/byId/:id", async (req, res) => {
   res.json(booking);
 });
 
+//PUT request for updating service_status
+router.put("/byBookingId/:booking_id", async (req,res) => {
+  const booking_id = req.params.booking_id;
+  const { service_status } = req.body;
+
+  try {
+    // const existingBooking = await Bookings.findByPk(id);
+    const existingBooking = await Bookings.findOne({
+      where: {booking_id: booking_id}
+    })
+
+    if(!existingBooking){
+      return res.status(404).json({ error: "Booking not found"});
+    }
+
+    await existingBooking.update(
+      {
+      service_status: service_status,
+      }
+
+    );
+
+    res.json("Service status updated successfully");
+  } catch( error ) {
+    console.error("Error updating service status", error);
+    res.status(500).json({error: "Internal server error"});
+  }
+
+})
+
 module.exports = router;
