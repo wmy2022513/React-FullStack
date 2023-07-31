@@ -30,25 +30,35 @@ function ListBookings() {
               Customer Name: {value.customerName}
             </div>
             <div className="btn">
-              <button type="button" id="booked">
-                Booked
-              </button>
-              <button type="button" id="inService">
-                In service
-              </button>
-              <button type="button" id="fixed">
-                Fixed/
-                <br />
-                Completed
-              </button>
-              <button type="button" id="collected">
-                Collected
-              </button>
-              <button type="button" id="unrepairable">
-                Unrepairable/
-                <br />
-                Scrapped
-              </button>
+              {value.service_status === "Booked" && (
+                <button type="button" id="Booked">
+                  Booked
+                </button>
+              )}
+              {value.service_status === "In Service" && (
+                <button type="button" id="inService">
+                  In service
+                </button>
+              )}
+              {value.service_status === "Fixed" && (
+                <button type="button" id="Fixed">
+                  Fixed/
+                  <br />
+                  Completed
+                </button>
+              )}
+              {value.service_status === "Collected" && (
+                <button type="button" id="Collected">
+                  Collected
+                </button>
+              )}
+              {value.service_status === "Unrepairable" && (
+                <button type="button" id="Unrepairable">
+                  Unrepairable/
+                  <br />
+                  Scrapped
+                </button>
+              )}
             </div>
           </div>
         );

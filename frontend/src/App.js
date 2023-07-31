@@ -1,4 +1,5 @@
 import "./App.css";
+import React from "react";
 import {BrowserRouter as Router, Route, Routes, Link} from "react-router-dom";
 //v6 syntax has something different to the previous version, be aware of it!
 import Home from "./pages/Home";
@@ -12,9 +13,11 @@ import { AuthContext } from "./helpers/AuthContext";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import Booking from "./pages/Booking";
+import Invoicer from "./pages/Invoicer";
 
 
 function App() {
+
   const [authState, setAuthState] = useState({
     username:"",
     id: 0,
@@ -81,9 +84,10 @@ function App() {
             <Route path="/post/:id" element={<Post />} />
             <Route path="/registration" element={<Registration />} />
             <Route path="/login" element={<Login />} />
-            <Route path="/createbookings" element= {<CreateBookings /> } />
-            <Route path="/listbookings" element= {<ListBookings />} />
-            <Route path="/booking/:id" element= {<Booking />} />
+            <Route path="/createbookings" element={<CreateBookings />} />
+            <Route path="/listbookings" element={<ListBookings />} />
+            <Route path="/booking/:id" element={<Booking />} />
+            <Route path="/booking/:id/invoice" element={<Invoicer />} />
           </Routes>
         </Router>
       </AuthContext.Provider>

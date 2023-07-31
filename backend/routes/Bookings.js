@@ -56,15 +56,15 @@ router.get("/byId/:id", async (req, res) => {
 });
 
 //PUT request for updating service_status
-router.put("/byBookingId/:booking_id", async (req,res) => {
-  const booking_id = req.params.booking_id;
+router.put("/byId/:id", async (req,res) => {
+  const id = req.params.id;
   const { service_status } = req.body;
 
   try {
-    // const existingBooking = await Bookings.findByPk(id);
-    const existingBooking = await Bookings.findOne({
-      where: {booking_id: booking_id}
-    })
+    const existingBooking = await Bookings.findByPk(id);
+    // const existingBooking = await Bookings.findOne({
+    //   where: {booking_id: booking_id}
+    // })
 
     if(!existingBooking){
       return res.status(404).json({ error: "Booking not found"});

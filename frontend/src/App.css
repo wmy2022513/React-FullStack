@@ -52,10 +52,11 @@ body #listHover {
   display: flex;
   align-items: center;
   padding-left: 15px;
-  background-color: dodgerblue;
+  background-color: white;
   color: white;
   border-bottom-left-radius: 10px;
   border-bottom-right-radius: 10px;
+  justify-content: center;
 }
 
 /* CREATE POST PAGE CSS*/
@@ -120,6 +121,7 @@ span {
   font-family: Arial, Helvetica, sans-serif;
 }
 
+
 .navbar .links {
   flex: 50%;
   height: 100%;
@@ -172,10 +174,14 @@ span {
 
 .rightSide {
   flex: 50%;
-  height: calc(100vh - 70px);
+  height: calc(100vh - 120px);
   display: grid;
+  /* flex-direction: column; */
   place-items: center;
+  /* align-items: center; */
+  
 }
+
 
 #individual {
   height: 500px;
@@ -278,13 +284,99 @@ select {
   margin: 10px;
   
 }
-#booked {
+#Booked {
   background-color: yellowgreen;
 }
-#unrepairable {
+#Unrepairable {
   background-color: orange;
 }
+
+#Fixed {
+  background-color: red;
+}
+
+#Collected {
+  background-color: cadetblue;
+}
+
+
 .formContainer .react-datepicker {
   position:absolute
  
 }
+#editButton{
+  /* display: flex; */
+  /* align-items: center; */
+  /* margin-bottom: 1px; */
+  /* margin-left: -350px; */
+  /* flex-direction: column; */
+  /* position: fixed; */
+  margin-top: -10px;
+}
+.buttonList{
+    /* width: 1300px; */
+  height: auto;
+}
+
+.selectable-btn {
+
+  background-color: #f0f0f0;
+  color: #333;
+  padding: 8px 16px;
+  border: 1px solid #ccc;
+  cursor: pointer;
+}
+
+.selectable-btn.selected {
+  /* Your selected button styles here */
+  /* For example, change the background color to indicate the selected state: */
+  background-color: #007bff;
+  color: #fff;
+}
+
+.editButtonContainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 500px;
+  height: auto;
+  padding: 20px;
+  border: 3px solid dodgerblue;
+  border-radius: 10px;
+  margin-top: 100px;
+}
+
+.selecFormContainer {
+  margin-top: 50px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 450px;
+  height: auto;
+  padding: 20px;
+  border: 3px solid dodgerblue;
+  border-radius: 10px;
+}
+.selecFormContainer button {
+  
+  margin-top: 15px;
+  height: 40px;
+  border: none;
+  background-color: dodgerblue;
+  border-radius: 5px;
+  color:white
+}
+
+.selecFormContainer button:hover {
+  cursor: pointer;
+  background-color: lightskyblue;
+}
+
+#invoice {
+  cursor: pointer;
+  color: white;
+  border-radius: 5px;
+  width:50%;
+  background-color: dodgerblue;
+}
+
