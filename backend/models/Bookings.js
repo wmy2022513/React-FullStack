@@ -65,6 +65,14 @@ module.exports = ( sequelize, DataTypes) => {
         allowNull:false
       }
     });
+
+    Bookings.associate = (models) => {
+      Bookings.hasMany(models.AddSupplies, {
+        foreignKey: "booking_id", // This is the foreign key column in AddSupplies
+        onDelete: "cascade",
+      });
+    }
+
     return Bookings;
 }
 

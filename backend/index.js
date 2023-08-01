@@ -25,6 +25,8 @@ const SuppliesRouter = require('./routes/Supplies')
 app.use('/supplies', SuppliesRouter)
 const serviceFeeRouter = require('./routes/ServiceFee')
 app.use('/servicefee', serviceFeeRouter)
+const AddSuppliesRouter = require('./routes/AddSupplies')
+app.use('/addsupplies', AddSuppliesRouter)
 
 db.sequelize.sync().then(() =>{
     app.listen(3001, () => {
