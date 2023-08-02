@@ -9,32 +9,29 @@ import Registration from "./pages/Registration";
 import Login from "./pages/Login";
 import CreateBookings from "./pages/CreateBookings";
 import ListBookings from "./pages/ListBookings";
-import { AuthContext } from "./helpers/AuthContext";
-import { useState, useEffect } from "react";
+import {AuthContext} from "./helpers/AuthContext";
+import {useState, useEffect} from "react";
 import axios from "axios";
 import Booking from "./pages/Booking";
 import Invoicer from "./pages/Invoicer";
 
-
 function App() {
-
   const [authState, setAuthState] = useState({
-    username:"",
+    username: "",
     id: 0,
     status: false,
   });
 
   useEffect(() => {
-
     axios
-      .get('http://localhost:3001/auth/auth', {
+      .get("http://localhost:3001/auth/auth", {
         headers: {
           accessToken: localStorage.getItem("accessToken"),
         },
       })
       .then((response) => {
         if (response.data.error) {
-          setAuthState(prevState => ({...prevState, status:false}));
+          setAuthState((prevState) => ({...prevState, status: false}));
           //only need to change authState, so pass in prevState(previous state) put ... in the front
         } else {
           setAuthState({
@@ -43,18 +40,18 @@ function App() {
             status: true,
           });
         }
-      })
+      });
   }, []);
 
   const logout = () => {
     localStorage.removeItem("accessToken");
     setAuthState({
-      username:"",
+      username: "",
       id: 0,
-      status: false
+      status: false,
     });
     alert("You've already log out");
-  }
+  };
 
   return (
     <div className="App">

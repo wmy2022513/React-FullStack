@@ -17,24 +17,22 @@ function Booking() {
   const [selectedOption, setSelectedOption] = useState("");
   const [dropdownForms, setDropdownForms] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [supplies,setSupplies] = useState([]);
-  const [selectedSupplies,setSelectedSupplies] = useState("");
-  const [customSelects,setCustomSelects] = useState([]);
-  
+  const [supplies, setSupplies] = useState([]);
+  const [selectedSupplies, setSelectedSupplies] = useState("");
+  const [existingData, setExistingData] = useState([]);
+  const [customSelects, setCustomSelects] = useState([]);
+
 
   let navigate = useNavigate();
 
   // Function to handle changes in the CustomSelect
   const handleCustomSelectChange = (index, selectedValue) => {
-
-
     // customSelects(itemName);
     const updatedSelects = [...customSelects];
-        
-    updatedSelects[index] = selectedValue;  
 
- 
-    console.log(updatedSelects)
+    updatedSelects[index] = selectedValue;
+
+    console.log(updatedSelects);
 
     setCustomSelects(updatedSelects);
   };
@@ -49,8 +47,7 @@ function Booking() {
     const updatedSelects = [...customSelects];
     updatedSelects.splice(index, 1);
     setCustomSelects(updatedSelects);
-
-  }
+  };
 
   // const handleSuppliesChange = (e) => {
   //   const selectedSupplies = e.target.value;
@@ -59,27 +56,47 @@ function Booking() {
 
   // }
 
-  useEffect(()=> {
+  useEffect(() => {
     const fetchSuppliesListAndFee = async () => {
       await axios.get("http://localhost:3001/supplies").then((response) => {
         // console.log(response.data);
         setSupplies(response.data);
-      })
-    }
+      });
+    };
     fetchSuppliesListAndFee();
-  },[])
+  }, []);
 
   useEffect(() => {
     axios.get(`http://localhost:3001/bookings/byId/${id}`).then((response) => {
       // console.log(response.data);
       setBookingObject(response.data);
-      setIsLoading(false)
+      setIsLoading(false);
     });
   }, [id]);
 
+  //need to wait the getBookingsById has data to proceed, initially is empty
+  useEffect(() => {
+    const fetchExistingData = async () => {
+      try {
+        if (bookingObject.booking_id) {
+          const response = await axios.get(
+            `http://localhost:3001/addsupplies/bybookingid/${bookingObject.booking_id}`
+          );
+          console.log(response.data);
+          setExistingData(response.data);
+          setCustomSelects(response.data.map((data) => data.item));
+        }
+      } catch (error) {
+        console.error("Error while fetching existing data:", error);
+      }
+    };
+
+    fetchExistingData();
+  }, [bookingObject.booking_id]);
+
   const handleInvoiceBtn = () => {
     navigate(`/booking/${id}/invoice`);
-  }
+  };
 
   const handleButtonClick = (event) => {
     // Remove "selected" class from the previously clicked button
@@ -90,8 +107,6 @@ function Booking() {
     // console.log(clickedButtonId);
   };
 
-
-
   const handleOptionChange = (event) => {
     setSelectedOption(event.target.value);
   };
@@ -100,26 +115,28 @@ function Booking() {
     // Create a new dropdown menu form with the hardcoded options
     const newDropdownForm = (
       <>
-      <select value={selectedOption} onChange={handleOptionChange}>
-        {supplies.map((option) => (
-          <option key={option.id} value={option.item}>
-            {option.item}
-          </option>
-        ))}
-      </select>
-      <button onClick={() => handleRemoveDropdown(dropdownForms.length)}>Remove</button>
+        <select value={selectedOption} onChange={handleOptionChange}>
+          {supplies.map((option) => (
+            <option key={option.id} value={option.item}>
+              {option.item}
+            </option>
+          ))}
+        </select>
+        <button onClick={() => handleRemoveDropdown(dropdownForms.length)}>
+          Remove
+        </button>
       </>
     );
 
     // Add the new dropdown form to the state
     setDropdownForms((prevForms) => [...prevForms, newDropdownForm]);
   };
-    const handleRemoveDropdown = (formIndex) => {
-      // Remove the dropdown form with the specified index from the state
-      setDropdownForms((prevForms) =>
-        prevForms.filter((form, index) => index !== formIndex)
-      );
-    };
+  const handleRemoveDropdown = (formIndex) => {
+    // Remove the dropdown form with the specified index from the state
+    setDropdownForms((prevForms) =>
+      prevForms.filter((form, index) => index !== formIndex)
+    );
+  };
 
   const applyChanges = () => {
     const confirmed = window.confirm("Are you sure you want to apply changes?");
@@ -127,31 +144,34 @@ function Booking() {
       axios.put(`http://localhost:3001/bookings/byId/${id}`, {
         service_status: selectedButton,
       });
-        // alert("Apply changes successfully!");
-        // navigate("/listbookings");
+      // alert("Apply changes successfully!");
+      // navigate("/listbookings");
     }
   };
 
   const onSubmit = async (data) => {
     try {
-
       applyChanges();
 
-       const pricesResponse = await axios.get("http://localhost:3001/supplies");
+      const pricesResponse = await axios.get("http://localhost:3001/supplies");
 
-       // Map the prices data to an object with item names as keys and prices as values
-       const pricesMap = {};
-       pricesResponse.data.forEach((item) => {
-         pricesMap[item.item] = item.price;
-       });
+      // Map the prices data to an object with item names as keys and prices as values
+      const pricesMap = {};
+      pricesResponse.data.forEach((item) => {
+        pricesMap[item.item] = item.price;
+      });
 
       const selectedSuppliesData = customSelects.map((selectedValue) => ({
         ...data,
         item: selectedValue,
         booking_id: bookingObject.booking_id,
-        price: pricesMap[selectedValue]
+        price: pricesMap[selectedValue],
       }));
 
+      // Delete existing data for the given booking_id at first
+      await axios.delete(
+        `http://localhost:3001/addsupplies/bybookingid/${bookingObject.booking_id}`
+      );
       // Send multiple POST requests using Promise.all
       const requests = selectedSuppliesData.map((supplyData) =>
         axios.post("http://localhost:3001/addsupplies", supplyData)
@@ -170,9 +190,8 @@ function Booking() {
     booking_id: bookingObject.booking_id,
     quantity: 1,
     item: "",
-    price: 0
-  }
-
+    price: 0,
+  };
 
   return (
     <div className="postPage">
@@ -259,12 +278,49 @@ function Booking() {
               Scrapped
             </button>
           </div>
+          {/* <Formik initialValues={initialValues} onSubmit={onSubmit}>
+            <Form className="formContainer" id="bookSelect">
+              <button type="button" onClick={handleAddCustomSelect}>
+                Add Supplies
+              </button> */}
+          {/* <div className="selecFormContainer"> */}
+          {/* {customSelects.map((selectedValue, index) => (
+                <div key={index}>
+                  <CustomSelect
+                    label={`Supplies ${index + 1}`}
+                    name={`selectedSupplies${index}`}
+                    value={selectedValue}
+                    onChange={(e) =>
+                      handleCustomSelectChange(index, e.target.value)
+                    }
+                  >
+                    <option value="" disabled>
+                      Please select a supplies
+                    </option>
+                    {supplies.map((sup) => (
+                      <option key={sup.id}>{sup.item}</option>
+                    ))}
+                  </CustomSelect>
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveCustomSelect(index)}
+                  >
+                    Remove
+                  </button>
+                </div>
+              ))}
+
+              <div>
+                <button type="submit">Submit</button>
+              </div>
+            </Form>
+          </Formik> */}
           <Formik initialValues={initialValues} onSubmit={onSubmit}>
             <Form className="formContainer" id="bookSelect">
               <button type="button" onClick={handleAddCustomSelect}>
                 Add Supplies
               </button>
-              {/* <div className="selecFormContainer"> */}
+              {/* Render the CustomSelect components based on the existing data */}
               {customSelects.map((selectedValue, index) => (
                 <div key={index}>
                   <CustomSelect
@@ -279,8 +335,7 @@ function Booking() {
                       Please select a supplies
                     </option>
                     {supplies.map((sup) => (
-                      
-                      <option key={sup.id}>{sup.item}</option> 
+                      <option key={sup.id}>{sup.item}</option>
                     ))}
                   </CustomSelect>
                   <button
@@ -291,57 +346,15 @@ function Booking() {
                   </button>
                 </div>
               ))}
-
-              {/* Add the addButton */}
-
-              {/* <CustomSelect
-                  label="Supplies"
-                  name="supplies"
-                  placeholder="Please select a supplies"
-                  value={selectedSupplies}
-                  onChange= {handleSuppliesChange}
-                >
-                <option value="" disabled>
-                  Please select a supplies
-                </option>
-                {supplies.map((sup) => (
-                  <option key={sup.id}>
-                    {sup.item}
-                  </option>
-                ))}
-                </CustomSelect> */}
-              {/* <div>
-                  <button onClick={handleAddDropdown}>
-                    Add Selection Form
-                  </button>
-                  {dropdownForms.map((form, index) => (
-                    <div key={index}>{form}</div>
-                  ))}
-                </div> */}
-              {/* </div> */}
               <div>
                 <button type="submit">Submit</button>
               </div>
             </Form>
           </Formik>
-          {/* <div className="selecFormContainer">
-
-            <button onClick={handleAddDropdown}>Add Selection Form</button>
-            {dropdownForms.map((form, index) => (
-              <div key={index}>{form}</div>
-            ))}
-          </div> */}
-
-          {/* )} */}
-          {/* <button onClick={applyChanges} type="submit">
-            Apply
-          </button> */}
         </div>
       </div>
-      {/* <Invoicer id= {id} /> */}
     </div>
   );
-  
 }
 
 export default Booking;
