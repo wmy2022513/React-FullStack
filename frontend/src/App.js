@@ -1,6 +1,6 @@
 import "./App.css";
 import React from "react";
-import {BrowserRouter as Router, Route, Routes, Link} from "react-router-dom";
+import {BrowserRouter as Router, Route, Routes, Link, useNavigate} from "react-router-dom";
 //v6 syntax has something different to the previous version, be aware of it!
 import Home from "./pages/Home";
 import CreatePost from "./pages/CreatePost";
@@ -16,6 +16,7 @@ import Booking from "./pages/Booking";
 import Invoicer from "./pages/Invoicer";
 
 function App() {
+  // let navigate = useNavigate();
   const [authState, setAuthState] = useState({
     username: "",
     id: 0,
@@ -51,6 +52,7 @@ function App() {
       status: false,
     });
     alert("You've already log out");
+    
   };
 
   return (
@@ -61,8 +63,12 @@ function App() {
             <div className="links">
               <Link to="/"> HomePage </Link>
               <Link to="/createpost"> Create A Post </Link>
-              <Link to="/createbookings">Book A Service</Link>
-              <Link to="/listbookings">Booking List</Link>
+              {authState.status && (
+                <>
+                  <Link to="/createbookings">Book A Service</Link>
+                  <Link to="/listbookings">Booking List</Link>
+                </>
+              )}
               {!authState.status && (
                 <>
                   <Link to="/login"> Login </Link>

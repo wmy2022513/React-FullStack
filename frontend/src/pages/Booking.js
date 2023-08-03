@@ -13,7 +13,7 @@ function Booking() {
   const [editMode, setEditMode] = useState(false);
   const [addedItem, setAddedItem] = useState("");
   const buttonListRef = useRef(null);
-  const [selectedButton, setSelectedButton] = useState(null);
+  const [selectedButton, setSelectedButton] = useState(bookingObject.service_status);//if none of the button is selected
   const [selectedOption, setSelectedOption] = useState("");
   const [dropdownForms, setDropdownForms] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -70,6 +70,7 @@ function Booking() {
     axios.get(`http://localhost:3001/bookings/byId/${id}`).then((response) => {
       // console.log(response.data);
       setBookingObject(response.data);
+      // console.log(bookingObject)
       setIsLoading(false);
     });
   }, [id]);
@@ -78,9 +79,9 @@ function Booking() {
   useEffect(() => {
     const fetchExistingData = async () => {
       try {
-        if (bookingObject.booking_id) {
+        if (bookingObject.invoice_id) {
           const response = await axios.get(
-            `http://localhost:3001/addsupplies/bybookingid/${bookingObject.booking_id}`
+            `http://localhost:3001/addsupplies/byinvoiceid/${bookingObject.invoice_id}`
           );
           console.log(response.data);
           setExistingData(response.data);
@@ -92,7 +93,7 @@ function Booking() {
     };
 
     fetchExistingData();
-  }, [bookingObject.booking_id]);
+  }, [bookingObject.invoice_id]);
 
   const handleInvoiceBtn = () => {
     navigate(`/booking/${id}/invoice`);
@@ -138,11 +139,16 @@ function Booking() {
     );
   };
 
+
   const applyChanges = () => {
     const confirmed = window.confirm("Are you sure you want to apply changes?");
+        // console.log(bookingObject.service_status);
+        
+
     if (confirmed) {
       axios.put(`http://localhost:3001/bookings/byId/${id}`, {
-        service_status: selectedButton,
+        service_status: selectedButton ,
+        // service_status: statusUpdate
       });
       // alert("Apply changes successfully!");
       // navigate("/listbookings");
@@ -164,13 +170,14 @@ function Booking() {
       const selectedSuppliesData = customSelects.map((selectedValue) => ({
         ...data,
         item: selectedValue,
-        booking_id: bookingObject.booking_id,
+        invoice_id: bookingObject.invoice_id,
         price: pricesMap[selectedValue],
+        BookingId: id
       }));
 
-      // Delete existing data for the given booking_id at first
+      // Delete existing data for the given invoice_id at first
       await axios.delete(
-        `http://localhost:3001/addsupplies/bybookingid/${bookingObject.booking_id}`
+        `http://localhost:3001/addsupplies/byinvoiceid/${bookingObject.invoice_id}`
       );
       // Send multiple POST requests using Promise.all
       const requests = selectedSuppliesData.map((supplyData) =>
@@ -187,7 +194,7 @@ function Booking() {
   };
 
   const initialValues = {
-    booking_id: bookingObject.booking_id,
+    invoice_id: bookingObject.invoice_id,
     quantity: 1,
     item: "",
     price: 0,
@@ -199,7 +206,7 @@ function Booking() {
         <div className="post" id="individual">
           <div className="title"> {bookingObject.service} </div>
           <div className="body">
-            <label>Booking ID: {bookingObject.booking_id}</label>
+            <label>Invoice ID: {bookingObject.invoice_id}</label>
             <label>Customer Name: {bookingObject.customerName} </label>
             <label>Phone Number: {bookingObject.phoneNumber} </label>
             <label>Vehicle Type: {bookingObject.vehicleType} </label>

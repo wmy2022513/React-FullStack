@@ -15,22 +15,22 @@ router.get('/', async (req, res) => {
   res.json(listOfSupplies)
 })
 
-router.get('/bybookingid/:booking_id', async(req,res) => {
-  const booking_id = req.params.booking_id;
+router.get('/byinvoiceid/:invoice_id', async(req,res) => {
+  const invoice_id = req.params.invoice_id;
   const findByBookId = await AddSupplies.findAll({
-    where: { booking_id: booking_id},
+    where: { invoice_id: invoice_id},
   })
 
   res.json(findByBookId)
 })
 
-router.delete("/bybookingid/:booking_id", async (req, res) => {
-  const booking_id = req.params.booking_id;
+router.delete("/byinvoiceid/:invoice_id", async (req, res) => {
+  const invoice_id = req.params.invoice_id;
 
   try {
     await AddSupplies.destroy({
       where: {
-        booking_id: booking_id,
+        invoice_id: invoice_id,
       },
     });
     res.json("DELETED SUCCESSFULLY");

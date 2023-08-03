@@ -5,10 +5,12 @@ const bcrypt = require("bcrypt");
 const {validateToken} = require("../middlewares/AuthMiddleware");
 const {sign} = require("jsonwebtoken");
 
+//register a user
 router.post("/", async (req, res) => {
-  const {username, password} = req.body;
+  const {username, password, role} = req.body;
   bcrypt.hash(password, 10).then((hash) => {
     Users.create({
+      role: role,
       username: username,
       password: hash,
     });

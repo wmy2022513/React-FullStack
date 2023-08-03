@@ -1,5 +1,10 @@
 module.exports = ( sequelize, DataTypes) => {
     const Users = sequelize.define("Users", {
+        role: {
+            type: DataTypes.STRING,
+            allowNull: false,
+            defaultValue:"customer"
+        },
         username: {
             type: DataTypes.STRING,
             allowNull: false,
@@ -10,10 +15,6 @@ module.exports = ( sequelize, DataTypes) => {
         },
     });
 
-    Users.associate = (models) => {
-        Users.hasMany(models.Likes, {
-            onDelete: "cascade",
-        });
-    };
+
     return Users;
 }

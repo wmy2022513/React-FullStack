@@ -1,12 +1,14 @@
 const express = require("express");
 const router = express.Router();
 const {Bookings} = require("../models");
+const {validateToken} = require("../middlewares/AuthMiddleware");
 
 
-
-router.post("/", async (req, res) => {
+router.post("/", validateToken ,async (req, res) => {
   const {
+    username,
     customerName,
+    email,
     phoneNumber,
     licenseDetails,
     vehicleType,
@@ -20,11 +22,13 @@ router.post("/", async (req, res) => {
     selectedTime,
     userDescription,
     service_status,
-    booking_id,
+    invoice_id,
     booking_seq
   } = req.body;
   Bookings.create({
+    username:username,
     customerName: customerName,
+    email:email,
     phoneNumber: phoneNumber,
     licenseDetails: licenseDetails,
     vehicleType: vehicleType,
@@ -38,7 +42,7 @@ router.post("/", async (req, res) => {
     selectedTime: selectedTime,
     userDescription: userDescription,
     service_status: service_status,
-    booking_id: booking_id,
+    invoice_id:invoice_id,
     booking_seq: booking_seq
   });
   res.json("SUCCESS");
@@ -82,6 +86,33 @@ router.put("/byId/:id", async (req,res) => {
     console.error("Error updating service status", error);
     res.status(500).json({error: "Internal server error"});
   }
+
+})
+
+router.delete("/byId/:id", async(req,res)=> {
+  const id = req.params.id;
+
+  try{
+    const booking = await Bookings.findByPk(id);
+
+    if(!booking) {
+      return res.status(404).json({error: "Booking not found"});
+    }
+
+      await Bookings.destroy({
+        where: {
+          id: id,
+        },
+      });
+      res.json("DELETED SUCCESSFULLY");
+
+  } catch(error){
+    console.error("Error deleting booking", error);
+    res.status(500).json({error: "Internal server error"});
+  }
+
+  
+
 
 })
 

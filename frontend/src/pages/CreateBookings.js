@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useState , useContext} from "react";
 import * as Yup from "yup";
 import {Formik, Form, Field, ErrorMessage, useFormik} from "formik";
 import CustomSelect from "../components/CustomSelect";
@@ -7,6 +7,7 @@ import {DatePickerField} from "../components/DatePicker";
 import { useNavigate } from "react-router-dom";
 import DatePicker from "react-datepicker";
 import {format} from "date-fns";
+import {AuthContext} from "../helpers/AuthContext";
 
 function CreateBookings() {
   // const [showTextarea, setShowTextarea] = useState(false);
@@ -23,7 +24,7 @@ function CreateBookings() {
   const [selectedService, setSelectedService] = useState("");
   const [selectedServiceName, setSelectedServiceName] = useState("");
   const [selectedServiceFee, setSelectedServiceFee] = useState(0);
-
+  const {authState} = useContext(AuthContext);
 
 
   let navigate = useNavigate();
@@ -49,7 +50,7 @@ function CreateBookings() {
     // console.log(selectedBrand)
   };
 
-  //not sure
+  //deal with the selected STRING type service splitting to service name and fee 
   const handleServiceChange = (event) => {
     const selectedService = event.target.value; //return ex.Annual Service - €200
 
@@ -99,7 +100,7 @@ function CreateBookings() {
       }
     };
 
-    // fetchMotorModels(selectedBrand);
+    fetchMotorModels(selectedBrand);
   }, [selectedBrand]);
 
   useEffect(() => { // requesting data from internal API
@@ -113,12 +114,12 @@ function CreateBookings() {
         } else {
 
           let returning = response.data;
-          //retrive booked data and assign a new booking_id
+          //retrive booked data and assign a new invoice_id
           let getTopPosition = returning.length - 1;
           console.log(
-            `the returned previous booking id: ${returning[getTopPosition].booking_id}`
+            `the returned previous booking id: ${returning[getTopPosition].invoice_id}`
           );
-          let lastBookId = returning[getTopPosition].booking_id;
+          let lastBookId = returning[getTopPosition].invoice_id;
           if (lastBookId.startsWith("GGRSVC")) {
             // Split the string "GGRSVC00X" into "GGRSVC" and "00X"
             const prefix = lastBookId.slice(0, -3); // "GGRSVC"
@@ -157,7 +158,9 @@ function CreateBookings() {
   }, []);
 
   const initialValues = {
+    username: "",
     customerName: "", // Add customName field to initialValues
+    email:"",
     phoneNumber: "",
     licenseDetails: "",
     vehicleType: "",
@@ -171,7 +174,7 @@ function CreateBookings() {
     selectedTime: "",
     userDescription: "",
     service_status: "Booked",
-    booking_id: "GGRSVC001",
+    invoice_id: "GGRSVC001",
     booking_seq: 1,
   };
 
@@ -181,15 +184,19 @@ function CreateBookings() {
     //Sending POST method then write data into database with API
     data.vehicleType = vehicleType; //need to specify the correct parameter
     data.vehicleBrand = selectedBrand; //in order to store into the database
-    data.service = selectedServiceName;; // Add selected service name to the data object
+    data.service = selectedServiceName; // Add selected service name to the data object
     data.serviceFee = selectedServiceFee; // Add selected service fee to the data object
-
+    data.username = authState.username;
         const formData = {
           ...data,
-          booking_id: newBookId,
+          invoice_id: newBookId,
         };
     try {
-      await axios.post("http://localhost:3001/bookings", formData).then(() => {
+      await axios.post("http://localhost:3001/bookings", formData,{
+        headers: {
+          accessToken: localStorage.getItem("accessToken"),
+        }
+      }).then(() => {
         // console.log(data);
       });
       alert("Booked Successfully");
@@ -223,7 +230,7 @@ function CreateBookings() {
         },
         headers: {
           "X-RapidAPI-Key":
-            "c811957cb1msh27a035dc6afb49ap1fe1dajsn84ef682033f4",
+            "3e444b30bfmsh2c7503f3d34a282p1fbe24jsn90c9b065de55",
           "X-RapidAPI-Host": "car-api2.p.rapidapi.com",
         },
       };
@@ -278,6 +285,13 @@ function CreateBookings() {
             id="inputCreatePost"
             name="phoneNumber"
             placeholder="(Ex.085-1234567)"
+          />
+          <label>email:</label>
+          <Field
+            autoComplete="off"
+            id="inputCreatePost"
+            name="email"
+            placeholder="(Ex.admin@gersgarage.ie)"
           />
           <label>License Details:</label>
           <Field
@@ -402,14 +416,15 @@ function CreateBookings() {
             name="selectedDate"
             selected={selectedDate}
             onChange={(date) => {
-              console.log(date)
+              console.log(date);
               if (isSunday(date) || isPastDate(date)) {
                 setSelectedDate(null); // Clear the input value for invalid dates
               } else {
                 setSelectedDate(date);
               }
             }}
-            dateFormat="dd/MM/yyyy"
+            // dateFormat="dd/MM/yyyy"
+            dateFormat="yyyy-MM-dd"
             placeholderText="Select a date"
             minDate={currentDate}
             filterDate={(date) => !isSunday(date)} // Disable Sundays

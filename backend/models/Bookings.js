@@ -1,8 +1,16 @@
 module.exports = ( sequelize, DataTypes) => {
     const Bookings = sequelize.define("Bookings", {
+      username:{
+        type: DataTypes.STRING,
+        allowNull:false
+      },
       customerName: {
         type: DataTypes.STRING,
         allowNull: false,
+      },
+      email: {
+        type:DataTypes.STRING,
+        allowNull:false,
       },
       phoneNumber: {
         type: DataTypes.STRING,
@@ -56,7 +64,7 @@ module.exports = ( sequelize, DataTypes) => {
         type: DataTypes.STRING,
         allowNull: false
       },
-      booking_id: {
+      invoice_id: {
         type: DataTypes.STRING,
         allowNull: false
       },
@@ -68,7 +76,6 @@ module.exports = ( sequelize, DataTypes) => {
 
     Bookings.associate = (models) => {
       Bookings.hasMany(models.AddSupplies, {
-        foreignKey: "booking_id", // This is the foreign key column in AddSupplies
         onDelete: "cascade",
       });
     }

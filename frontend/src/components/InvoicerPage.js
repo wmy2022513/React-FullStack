@@ -27,9 +27,9 @@ useEffect(() => {
 useEffect(()=> {
   const fetchSelectedData = async() => {
     try {
-      if(bookingObject.booking_id){
+      if(bookingObject.invoice_id){
         const response = await axios.get(
-          `http://localhost:3001/addsupplies/bybookingid/${bookingObject.booking_id}`
+          `http://localhost:3001/addsupplies/byinvoiceid/${bookingObject.invoice_id}`
         );
         console.log(response.data)
         setSelectedData(response.data);
@@ -39,7 +39,7 @@ useEffect(()=> {
     }
   }
   fetchSelectedData();
-}, [bookingObject.booking_id])
+}, [bookingObject.invoice_id])
 // console.log(selectedData)
 
   const handlePrint = () => {
@@ -92,7 +92,7 @@ useEffect(()=> {
           <ul>
             <li>
               <span className="font-bold">
-                Invoicer number: {bookingObject.booking_id}
+                Invoicer number: {bookingObject.invoice_id}
               </span>
             </li>
             <li>
