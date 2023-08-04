@@ -285,43 +285,7 @@ function Booking() {
               Scrapped
             </button>
           </div>
-          {/* <Formik initialValues={initialValues} onSubmit={onSubmit}>
-            <Form className="formContainer" id="bookSelect">
-              <button type="button" onClick={handleAddCustomSelect}>
-                Add Supplies
-              </button> */}
-          {/* <div className="selecFormContainer"> */}
-          {/* {customSelects.map((selectedValue, index) => (
-                <div key={index}>
-                  <CustomSelect
-                    label={`Supplies ${index + 1}`}
-                    name={`selectedSupplies${index}`}
-                    value={selectedValue}
-                    onChange={(e) =>
-                      handleCustomSelectChange(index, e.target.value)
-                    }
-                  >
-                    <option value="" disabled>
-                      Please select a supplies
-                    </option>
-                    {supplies.map((sup) => (
-                      <option key={sup.id}>{sup.item}</option>
-                    ))}
-                  </CustomSelect>
-                  <button
-                    type="button"
-                    onClick={() => handleRemoveCustomSelect(index)}
-                  >
-                    Remove
-                  </button>
-                </div>
-              ))}
 
-              <div>
-                <button type="submit">Submit</button>
-              </div>
-            </Form>
-          </Formik> */}
           <Formik initialValues={initialValues} onSubmit={onSubmit}>
             <Form className="formContainer" id="bookSelect">
               <button type="button" onClick={handleAddCustomSelect}>

@@ -53,6 +53,16 @@ router.get("/", async (req, res) => {
   res.json(listOfBookings);
 });
 
+router.get('/:username', async (req, res) => {
+  const username = req.params.username;
+  const findUserBooking = await Bookings.findAll({
+    where: {
+      username: username,
+    },
+  });
+  res.json(findUserBooking)
+})
+
 router.get("/byId/:id", async (req, res) => {
   const id = req.params.id;
   const booking = await Bookings.findByPk(id);

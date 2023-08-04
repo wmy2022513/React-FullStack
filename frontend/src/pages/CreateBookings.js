@@ -4,52 +4,129 @@ import {Formik, Form, Field, ErrorMessage, useFormik} from "formik";
 import CustomSelect from "../components/CustomSelect";
 import axios from "axios";
 import {DatePickerField} from "../components/DatePicker";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import DatePicker from "react-datepicker";
 import {format} from "date-fns";
 import {AuthContext} from "../helpers/AuthContext";
 
 function CreateBookings() {
+  const [fetchedData, setFetchedData] = useState([]);
   // const [showTextarea, setShowTextarea] = useState(false);
+  const [customerName, setCustomerName] = useState("")
   const [vehicleType, setVehicleType] = useState("");
   // const [otherVehicleType, setOtherVehicleType] = useState("");
   const [carBrand, setCarBrand] = useState([]);
   const [motorBrands, setMotorBrands] = useState([]);
   const [selectedBrand, setSelectedBrand] = useState("");
   const [motorModels, setMotorModels] = useState([]);
+  const [selectedModel, setSelectedModel] = useState("");
   const [year, setYear] = useState([]);
+  const [selectedYear, setSelectedYear] = useState("");
+  const [selectedEngine, setSelectedEngine] = useState("");
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [newBookId,setNewBookId] = useState("");
   const [serviceDetails, setServiceDetails] = useState([]);
   const [selectedService, setSelectedService] = useState("");
   const [selectedServiceName, setSelectedServiceName] = useState("");
   const [selectedServiceFee, setSelectedServiceFee] = useState(0);
+  const [selectedTimeSlot, setSelectedTimeSlot] = useState("")
+  const [existingData, setExistingData] = useState([]);
   const {authState} = useContext(AuthContext);
-
-
+  const [initialValuesLoaded, setInitialValuesLoaded] = useState(false);
+  
   let navigate = useNavigate();
+
+
+  useEffect(()=>{
+    const fetchExistingData = async () => {
+      try{
+        const response = await axios.get(
+          `http://localhost:3001/bookings/${authState.username}`
+        );
+        console.log(response.data);
+        // setExistingData(response.data); //Store fetched data in existingData state
+          if (response.data.length > 0) {
+            const lastSessionData = response.data[response.data.length - 1];
+            setFetchedData(lastSessionData); // Store the fetched data in the state
+            //set dropdown menus value
+            // setCustomerName(lastSessionData.customerName)
+            setVehicleType(lastSessionData.vehicleType)
+            setSelectedBrand(lastSessionData.vehicleBrand)
+            setSelectedModel(lastSessionData.model)
+            setSelectedYear(lastSessionData.year)
+            setSelectedEngine(lastSessionData.engineType)
+            setSelectedService(
+              `${lastSessionData.service} - €${lastSessionData.serviceFee}`
+            );
+            setSelectedServiceName(lastSessionData.service);
+            setSelectedServiceFee(lastSessionData.serviceFee)
+            setSelectedDate(lastSessionData.selectedDate)
+            setSelectedTimeSlot(lastSessionData.selectedTime)
+            setInitialValuesLoaded(true);
+            console.log(lastSessionData);
+          }
+      } catch(error) {
+        console.error("Error while fetching existing data:", error);
+      }
+    };
+    fetchExistingData();
+  }, [])
+
+  const initialValues = {
+    username: "",
+    customerName: "" ,
+    email: "",
+    phoneNumber: "",
+    licenseDetails: "",
+    vehicleType: "",
+    vehicleBrand: "",
+    model: "",
+    year: "",
+    engineType: "",
+    service: "",
+    serviceFee: 0,
+    selectedDate: null,
+    selectedTime: "",
+    userDescription: "",
+    service_status: "Booked",
+    invoice_id: "GGRSVC001",
+    booking_seq: 1,
+  };
+  if (initialValuesLoaded) {
+    initialValues.customerName = fetchedData.customerName || "";
+    initialValues.email = fetchedData.email || "";
+    initialValues.phoneNumber = fetchedData.phoneNumber || "";
+    initialValues.licenseDetails = fetchedData.licenseDetails || "";
+  }
 
   const handleSelectChange = (event) => {
     const selectedOption = event.target.value;
     setVehicleType(selectedOption);
-    // if (selectedOption === "Other") {
-    //   setShowTextarea(true);
 
-    // } else {
-    //   setShowTextarea(false);
-    // }
   };
 
-  // const handleTextAreaChange = (event) => {
-  //   setOtherVehicleType(event.target.value);
-  // };
-
   const handleBrandChange = (event) => {
-    const selectedModel = event.target.value;
-    setSelectedBrand(selectedModel);
+    const selectedBrand = event.target.value;
+    setSelectedBrand(selectedBrand);
     // console.log(selectedBrand)
   };
 
+  const handleModelChange = (event) => {
+    const selectedModel = event.target.value;
+    setSelectedModel(selectedModel)
+    console.log(selectedModel)
+  }
+
+  const handleSelectedYear = (e) => {
+    const selectedYears = e.target.value;
+    setSelectedYear(selectedYears);
+    
+  }
+  const handleSelectedEngine = (e) => {
+    const selectedEngines = e.target.value
+    setSelectedEngine(selectedEngines);
+  }
+  
   //deal with the selected STRING type service splitting to service name and fee 
   const handleServiceChange = (event) => {
     const selectedService = event.target.value; //return ex.Annual Service - €200
@@ -75,6 +152,10 @@ function CreateBookings() {
     }
   };
 
+  const handleSelectedTimeSlot = (e) => {
+    const selectedTimeSlots = e.target.value;
+    setSelectedTimeSlot(selectedTimeSlots)
+  }
 
 
   useEffect(() => { // get from external API
@@ -117,7 +198,7 @@ function CreateBookings() {
           //retrive booked data and assign a new invoice_id
           let getTopPosition = returning.length - 1;
           console.log(
-            `the returned previous booking id: ${returning[getTopPosition].invoice_id}`
+            `the returned previous invoice id: ${returning[getTopPosition].invoice_id}`
           );
           let lastBookId = returning[getTopPosition].invoice_id;
           if (lastBookId.startsWith("GGRSVC")) {
@@ -157,26 +238,8 @@ function CreateBookings() {
 
   }, []);
 
-  const initialValues = {
-    username: "",
-    customerName: "", // Add customName field to initialValues
-    email:"",
-    phoneNumber: "",
-    licenseDetails: "",
-    vehicleType: "",
-    vehicleBrand: "",
-    model: "",
-    year: "",
-    engineType: "",
-    service: "",
-    serviceFee: 0,
-    selectedDate: null,
-    selectedTime: "",
-    userDescription: "",
-    service_status: "Booked",
-    invoice_id: "GGRSVC001",
-    booking_seq: 1,
-  };
+
+
 
   const validationSchema = Yup.object().shape({});
 
@@ -184,6 +247,9 @@ function CreateBookings() {
     //Sending POST method then write data into database with API
     data.vehicleType = vehicleType; //need to specify the correct parameter
     data.vehicleBrand = selectedBrand; //in order to store into the database
+    data.year = selectedYear;
+    data.model = selectedModel;
+    data.engineType = selectedEngine;
     data.service = selectedServiceName; // Add selected service name to the data object
     data.serviceFee = selectedServiceFee; // Add selected service fee to the data object
     data.username = authState.username;
@@ -264,12 +330,35 @@ function CreateBookings() {
 
 
 
+
+        // const initialValues = {
+        //   username: "",
+        //   customerName: "" || fetchedData.customerName, // Add customName field to initialValues
+        //   email: "" || fetchedData.email,
+        //   phoneNumber: "" || fetchedData.phoneNumber,
+        //   licenseDetails: "" || fetchedData.licenseDetails,
+        //   vehicleType: "",
+        //   vehicleBrand: "",
+        //   model: "",
+        //   year: "",
+        //   engineType: "",
+        //   service: "",
+        //   serviceFee: 0,
+        //   selectedDate: null,
+        //   selectedTime: "",
+        //   userDescription: "" || fetchedData.userDescription,
+        //   service_status: "Booked",
+        //   invoice_id: "GGRSVC001",
+        //   booking_seq: 1,
+        // };
+
   return (
     <div className="createBooking">
       <Formik
         initialValues={initialValues}
         onSubmit={onSubmit}
         validationSchema={validationSchema}
+        enableReinitialize
       >
         <Form className="formContainer" id="bookSelect">
           <label>Customer Name:</label>
@@ -278,6 +367,8 @@ function CreateBookings() {
             id="inputCreatePost"
             name="customerName"
             placeholder="(Ex.Johnny)"
+            // value={initialValues.customerName}
+
           />
           <label>Phone Number:</label>
           <Field
@@ -285,6 +376,7 @@ function CreateBookings() {
             id="inputCreatePost"
             name="phoneNumber"
             placeholder="(Ex.085-1234567)"
+            // value={initialValues.phoneNumber}
           />
           <label>email:</label>
           <Field
@@ -292,6 +384,7 @@ function CreateBookings() {
             id="inputCreatePost"
             name="email"
             placeholder="(Ex.admin@gersgarage.ie)"
+            // value={initialValues.email}
           />
           <label>License Details:</label>
           <Field
@@ -299,6 +392,7 @@ function CreateBookings() {
             id="inputCreatePost"
             name="licenseDetails"
             placeholder="(Ex.12 G 123456)"
+            // value={initialValues.licenseDetails}
           />
           <CustomSelect
             label="Vehicle Type:"
@@ -349,6 +443,8 @@ function CreateBookings() {
             label="Model:"
             name="model"
             placeholder="Please select a model"
+            onChange={handleModelChange}
+            value={selectedModel}
           >
             <option value="" disabled>
               Please select a model
@@ -365,6 +461,8 @@ function CreateBookings() {
             label="Year:"
             name="year"
             placeholder="Please select a year"
+            onChange={handleSelectedYear}
+            value={selectedYear}
           >
             <option value="" disabled>
               Please select a year
@@ -377,6 +475,8 @@ function CreateBookings() {
             label="Engine Type"
             name="engineType"
             placeholder="Please select a engine type"
+            value={selectedEngine}
+            onChange={handleSelectedEngine}
           >
             <option value="" disabled>
               Please select a engine type
@@ -408,13 +508,14 @@ function CreateBookings() {
             id="inputCreatePost"
             name="userDescription"
             placeholder="(Add situation)"
+            // value={initialValues.userDescription}
           />
 
           <label>Select A Date:</label>
 
           <DatePickerField
             name="selectedDate"
-            selected={selectedDate}
+            select={selectedDate}
             onChange={(date) => {
               console.log(date);
               if (isSunday(date) || isPastDate(date)) {
