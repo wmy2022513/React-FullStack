@@ -1,19 +1,33 @@
-import React from "react";
+import React, { createContext,useContext } from "react";
 import axios from "axios";
 import {useEffect, useState} from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import { AuthContext } from "../helpers/AuthContext";
 
 function ListBookings() {
   const [listOfBookings, setListofBookings] = useState([]);
+  const {authState} = useContext(AuthContext);
+
   let navigate = useNavigate();
 
   useEffect(() => {
-    axios.get("http://localhost:3001/bookings").then((response) => {
-      console.log(response.data);
-      setListofBookings(response.data);
-    });
+    const fetchBookedData = async () => {
+      try {
+             const response = await axios.get(
+               `http://localhost:3001/bookings/${authState.username}`
+             );
+        // .then((response) => {
+        //   console.log(response.data);
+          setListofBookings(response.data);
+        // });
+        console.log(response)
+      } catch (error) {
+        console.error("Error while fetching data:",error)
+      }
+    }  
+    fetchBookedData();
   }, []);
-
+console.log(authState.username)
   return (
     <div>
       {listOfBookings.map((value, key) => {

@@ -3,6 +3,7 @@ const router = express.Router();
 const {Bookings} = require("../models");
 const {validateToken} = require("../middlewares/AuthMiddleware");
 
+const { Users} = require("../models");
 
 router.post("/", validateToken ,async (req, res) => {
   const {
@@ -53,15 +54,27 @@ router.get("/", async (req, res) => {
   res.json(listOfBookings);
 });
 
-router.get('/:username', async (req, res) => {
+
+
+
+router.get("/:username", async (req, res) => {
+  
   const username = req.params.username;
-  const findUserBooking = await Bookings.findAll({
-    where: {
-      username: username,
-    },
-  });
-  res.json(findUserBooking)
-})
+  const users = await Users.findOne({where: {username: username}});
+
+  if (users.role === "customer") {
+    const findUserBooking = await Bookings.findAll({
+      where: {
+        username: username,
+      },
+    });
+    res.json(findUserBooking);
+  }
+  if(users.role ==="admin") {
+    const findAll = await Bookings.findAll()
+    res.json(findAll)
+  }
+});
 
 router.get("/byId/:id", async (req, res) => {
   const id = req.params.id;

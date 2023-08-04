@@ -23,6 +23,7 @@ function Login() {
         setAuthState({
           username: response.data.username,
           id: response.data.id,
+          role: response.data.id,
           status: true,
         });
         navigate("/"); //route back to homepage

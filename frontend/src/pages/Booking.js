@@ -1,14 +1,17 @@
-import React, {useState, useEffect, useRef} from "react";
+import React, {useState, useEffect, useRef, useContext} from "react";
 import {useParams} from "react-router-dom";
 import axios from "axios";
 import {Formik, Form, Field} from "formik";
 import * as Yup from "yup";
 import {useNavigate} from "react-router-dom";
 import CustomSelect from "../components/CustomSelect";
+import { AuthContext } from "../helpers/AuthContext";
 
 
 function Booking() {
+
   let {id} = useParams();
+  const {authState} = useContext(AuthContext);
   const [bookingObject, setBookingObject] = useState({});
   const [editMode, setEditMode] = useState(false);
   const [addedItem, setAddedItem] = useState("");
@@ -216,114 +219,117 @@ function Booking() {
             <label>Engine Type: {bookingObject.engineType} </label>
             <label>Service: {bookingObject.service}</label>
           </div>
-          <div className="footer">
-            <button type="text" id="invoice" onClick={handleInvoiceBtn}>
-              {" "}
-              Generate Invoice
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <div className="rightSide">
-        {/* <div className="addCommentContainer"> */}
-
-        <div className="editButtonContainer">
-          <div className="buttonList" ref={buttonListRef}>
-            <button
-              type="button"
-              className={`selectable-btn ${
-                selectedButton === "Booked" ? "selected" : ""
-              }`}
-              id="Booked"
-              onClick={handleButtonClick}
-            >
-              Booked
-            </button>
-            <button
-              type="button"
-              className={`selectable-btn ${
-                selectedButton === "In Service" ? "selected" : ""
-              }`}
-              id="In Service"
-              onClick={handleButtonClick}
-            >
-              In service
-            </button>
-            <button
-              type="button"
-              className={`selectable-btn ${
-                selectedButton === "Fixed" ? "selected" : ""
-              }`}
-              id="Fixed"
-              onClick={handleButtonClick}
-            >
-              Fixed/
-              {/* <br /> */}
-              Completed
-            </button>
-            <button
-              type="button"
-              className={`selectable-btn ${
-                selectedButton === "Collected" ? "selected" : ""
-              }`}
-              id="Collected"
-              onClick={handleButtonClick}
-            >
-              Collected
-            </button>
-            <button
-              type="button"
-              className={`selectable-btn ${
-                selectedButton === "Unrepairable" ? "selected" : ""
-              }`}
-              id="Unrepairable"
-              onClick={handleButtonClick}
-            >
-              Unrepairable/
-              {/* <br /> */}
-              Scrapped
-            </button>
-          </div>
-
-          <Formik initialValues={initialValues} onSubmit={onSubmit}>
-            <Form className="formContainer" id="bookSelect">
-              <button type="button" onClick={handleAddCustomSelect}>
-                Add Supplies
+          {bookingObject.service_status !== "Booked" && (
+            <div className="footer">
+              <button type="text" id="invoice" onClick={handleInvoiceBtn}>
+                {" "}
+                Generate Invoice
               </button>
-              {/* Render the CustomSelect components based on the existing data */}
-              {customSelects.map((selectedValue, index) => (
-                <div key={index}>
-                  <CustomSelect
-                    label={`Supplies ${index + 1}`}
-                    name={`selectedSupplies${index}`}
-                    value={selectedValue}
-                    onChange={(e) =>
-                      handleCustomSelectChange(index, e.target.value)
-                    }
-                  >
-                    <option value="" disabled>
-                      Please select a supplies
-                    </option>
-                    {supplies.map((sup) => (
-                      <option key={sup.id}>{sup.item}</option>
-                    ))}
-                  </CustomSelect>
-                  <button
-                    type="button"
-                    onClick={() => handleRemoveCustomSelect(index)}
-                  >
-                    Remove
-                  </button>
-                </div>
-              ))}
-              <div>
-                <button type="submit">Submit</button>
-              </div>
-            </Form>
-          </Formik>
+            </div>
+          )}
         </div>
       </div>
+      {authState.role === "admin" && (
+        <div className="rightSide">
+          {/* <div className="addCommentContainer"> */}
+
+          <div className="editButtonContainer">
+            <div className="buttonList" ref={buttonListRef}>
+              <button
+                type="button"
+                className={`selectable-btn ${
+                  selectedButton === "Booked" ? "selected" : ""
+                }`}
+                id="Booked"
+                onClick={handleButtonClick}
+              >
+                Booked
+              </button>
+              <button
+                type="button"
+                className={`selectable-btn ${
+                  selectedButton === "In Service" ? "selected" : ""
+                }`}
+                id="In Service"
+                onClick={handleButtonClick}
+              >
+                In service
+              </button>
+              <button
+                type="button"
+                className={`selectable-btn ${
+                  selectedButton === "Fixed" ? "selected" : ""
+                }`}
+                id="Fixed"
+                onClick={handleButtonClick}
+              >
+                Fixed/
+                {/* <br /> */}
+                Completed
+              </button>
+              <button
+                type="button"
+                className={`selectable-btn ${
+                  selectedButton === "Collected" ? "selected" : ""
+                }`}
+                id="Collected"
+                onClick={handleButtonClick}
+              >
+                Collected
+              </button>
+              <button
+                type="button"
+                className={`selectable-btn ${
+                  selectedButton === "Unrepairable" ? "selected" : ""
+                }`}
+                id="Unrepairable"
+                onClick={handleButtonClick}
+              >
+                Unrepairable/
+                {/* <br /> */}
+                Scrapped
+              </button>
+            </div>
+
+            <Formik initialValues={initialValues} onSubmit={onSubmit}>
+              <Form className="formContainer" id="bookSelect">
+                <button type="button" onClick={handleAddCustomSelect}>
+                  Add Supplies
+                </button>
+                {/* Render the CustomSelect components based on the existing data */}
+                {customSelects.map((selectedValue, index) => (
+                  <div key={index}>
+                    <CustomSelect
+                      label={`Supplies ${index + 1}`}
+                      name={`selectedSupplies${index}`}
+                      value={selectedValue}
+                      onChange={(e) =>
+                        handleCustomSelectChange(index, e.target.value)
+                      }
+                    >
+                      <option value="" disabled>
+                        Please select a supplies
+                      </option>
+                      {supplies.map((sup) => (
+                        <option key={sup.id}>{sup.item}</option>
+                      ))}
+                    </CustomSelect>
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveCustomSelect(index)}
+                    >
+                      Remove
+                    </button>
+                  </div>
+                ))}
+                <div>
+                  <button type="submit">Submit</button>
+                </div>
+              </Form>
+            </Formik>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -19,6 +19,7 @@ function App() {
   // let navigate = useNavigate();
   const [authState, setAuthState] = useState({
     username: "",
+    role:"",
     id: 0,
     status: false,
   });
@@ -37,6 +38,7 @@ function App() {
         } else {
           setAuthState({
             username: response.data.username,
+            role: response.data.role,
             id: response.data.id,
             status: true,
           });

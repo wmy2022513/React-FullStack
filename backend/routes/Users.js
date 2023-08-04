@@ -34,7 +34,7 @@ router.post("/login", async (req, res) => {
     }
 
     const accessToken = sign(
-      {username: user.username, id: user.id},
+      {username: user.username, id: user.id, role:user.role},
       "importantsecret"
     );
 
@@ -42,6 +42,7 @@ router.post("/login", async (req, res) => {
       token: accessToken,
       username: username,
       id: user.id,
+      role: user.role
     });
   });
 });
