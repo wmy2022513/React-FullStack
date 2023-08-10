@@ -89,21 +89,15 @@ router.put("/byId/:id", async (req,res) => {
 
   try {
     const existingBooking = await Bookings.findByPk(id);
-    // const existingBooking = await Bookings.findOne({
-    //   where: {booking_id: booking_id}
-    // })
 
     if(!existingBooking){
       return res.status(404).json({ error: "Booking not found"});
     }
-
     await existingBooking.update(
       {
       service_status: service_status,
       }
-
     );
-
     res.json("Service status updated successfully");
   } catch( error ) {
     console.error("Error updating service status", error);

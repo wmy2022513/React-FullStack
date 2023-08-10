@@ -1,10 +1,9 @@
 import "./App.css";
 import React from "react";
-import {BrowserRouter as Router, Route, Routes, Link, useNavigate} from "react-router-dom";
+import {BrowserRouter as Router, Route, Routes, Link} from "react-router-dom";
 //v6 syntax has something different to the previous version, be aware of it!
-import Home from "./pages/Home";
-import CreatePost from "./pages/CreatePost";
-import Post from "./pages/Post";
+import HomePage from "./pages/HomePage";
+
 import Registration from "./pages/Registration";
 import Login from "./pages/Login";
 import CreateBookings from "./pages/CreateBookings";
@@ -64,7 +63,8 @@ function App() {
           <div className="navbar">
             <div className="links">
               <Link to="/"> HomePage </Link>
-              <Link to="/createpost"> Create A Post </Link>
+              {/* <Link to="/createpost"> Create A Post </Link> */}
+              
               {authState.status && (
                 <>
                   <Link to="/createbookings">Book A Service</Link>
@@ -84,9 +84,7 @@ function App() {
             </div>
           </div>
           <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/createpost" element={<CreatePost />} />
-            <Route path="/post/:id" element={<Post />} />
+            <Route path="/" element={<HomePage />} />
             <Route path="/registration" element={<Registration />} />
             <Route path="/login" element={<Login />} />
             <Route path="/createbookings" element={<CreateBookings />} />

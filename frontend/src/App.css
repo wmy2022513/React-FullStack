@@ -380,3 +380,22 @@ select {
   background-color: dodgerblue;
 }
 
+.introduction {
+  width: auto;
+  font-size:20px;
+  text-align: center;
+}
+.introduction h1{
+  width: auto;
+  font-size: 60px;
+}
+.introduction h2{
+
+  font-size: 30px;
+  text-align: center;
+}
+
+.introduction p {
+  margin: 10px;
+  justify-content: center;
+}

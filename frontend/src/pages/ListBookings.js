@@ -1,7 +1,7 @@
-import React, { createContext,useContext } from "react";
+import React, { useContext } from "react";
 import axios from "axios";
 import {useEffect, useState} from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../helpers/AuthContext";
 
 function ListBookings() {
@@ -14,7 +14,7 @@ function ListBookings() {
     const fetchBookedData = async () => {
       try {
              const response = await axios.get(
-               `http://localhost:3001/bookings/${authState.username}`
+               `http://localhost:3001/listbookings/user/${authState.username}`
              );
         // .then((response) => {
         //   console.log(response.data);

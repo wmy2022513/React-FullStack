@@ -24,9 +24,6 @@ module.exports = (sequelize, DataTypes) => {
       tableName: "AddSupplies",
     }
   );
-  // AddSupplies.belongsTo(sequelize.models.Bookings, {
-  //   foreignKey: "booking_id", // This is the foreign key column in AddSupplies
-  // });
 
   return AddSupplies;
 };

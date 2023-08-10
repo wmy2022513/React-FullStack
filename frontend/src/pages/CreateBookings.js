@@ -1,20 +1,15 @@
 import React, {useEffect, useState , useContext} from "react";
 import * as Yup from "yup";
-import {Formik, Form, Field, ErrorMessage, useFormik} from "formik";
+import {Formik, Form, Field} from "formik";
 import CustomSelect from "../components/CustomSelect";
 import axios from "axios";
 import {DatePickerField} from "../components/DatePicker";
-import { useNavigate, useParams } from "react-router-dom";
-import DatePicker from "react-datepicker";
-import {format} from "date-fns";
+import { useNavigate } from "react-router-dom";
 import {AuthContext} from "../helpers/AuthContext";
 
 function CreateBookings() {
   const [fetchedData, setFetchedData] = useState([]);
-  // const [showTextarea, setShowTextarea] = useState(false);
-  const [customerName, setCustomerName] = useState("")
   const [vehicleType, setVehicleType] = useState("");
-  // const [otherVehicleType, setOtherVehicleType] = useState("");
   const [carBrand, setCarBrand] = useState([]);
   const [motorBrands, setMotorBrands] = useState([]);
   const [selectedBrand, setSelectedBrand] = useState("");
@@ -29,8 +24,6 @@ function CreateBookings() {
   const [selectedService, setSelectedService] = useState("");
   const [selectedServiceName, setSelectedServiceName] = useState("");
   const [selectedServiceFee, setSelectedServiceFee] = useState(0);
-  const [selectedTimeSlot, setSelectedTimeSlot] = useState("")
-  const [existingData, setExistingData] = useState([]);
   const {authState} = useContext(AuthContext);
   const [initialValuesLoaded, setInitialValuesLoaded] = useState(false);
   
@@ -61,7 +54,6 @@ function CreateBookings() {
             setSelectedServiceName(lastSessionData.service);
             setSelectedServiceFee(lastSessionData.serviceFee)
             setSelectedDate(lastSessionData.selectedDate)
-            setSelectedTimeSlot(lastSessionData.selectedTime)
             setInitialValuesLoaded(true);
             console.log(lastSessionData);
           }
@@ -151,12 +143,6 @@ function CreateBookings() {
       setSelectedServiceFee(0);
     }
   };
-
-  const handleSelectedTimeSlot = (e) => {
-    const selectedTimeSlots = e.target.value;
-    setSelectedTimeSlot(selectedTimeSlots)
-  }
-
 
   useEffect(() => { // get from external API
     const fetchMotorModels = async (selectedModel) => {
@@ -409,15 +395,6 @@ function CreateBookings() {
             <option value="Small Buses">Small Buses</option>
             <option value="Other">Other</option>
           </CustomSelect>
-          {/* {showTextarea && (
-            <textarea
-              className="textarea"
-              name="otherVehicleType"
-              placeholder="Please specify the other vehicle type"
-              value={otherVehicleType}
-              onChange={handleTextAreaChange}
-            />
-          )} */}
 
           <CustomSelect
             label="Vehicle Brand"
