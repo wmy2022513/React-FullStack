@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { useParams } from "react-router-dom";
 
-
+//reference link: https://github.com/SankThomas/invoicer_v2
 export const InvoicerPage = () => {
 
 const [bookingObject,setBookingObject]= useState({});
@@ -46,7 +46,7 @@ useEffect(()=> {
     window.print();
   };
 
-  const total = bookingObject.serviceFee 
+
   return (
     <>
       <main className="p-5 lg:max-w-xl lg:mx-auto">
@@ -142,22 +142,7 @@ useEffect(()=> {
             <li>
               <span className="font-bold">Company name:</span> Ger's Garage
             </li>
-            {/* <li>
-              <span className="font-bold">Your email:</span>{" "}
-              tsbsankara@gmail.com
-            </li>
-            <li>
-              <span className="font-bold">Phone number:</span> 0712 345 678
-            </li>
-            <li>
-              <span className="font-bold">Bank:</span> Bank Account
-            </li>
-            <li>
-              <span className="font-bold">Account holder:</span> Thomas Sankara
-            </li> */}
-            {/* <li>
-              <span className="font-bold">Account number:</span> 123 456 789
-            </li> */}
+
             <li>
               <span className="font-bold">Website:</span> https://gersgarage.ie
             </li>

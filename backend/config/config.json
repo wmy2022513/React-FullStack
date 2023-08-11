@@ -2,7 +2,7 @@
   "development": {
     "username": "root",
     "password": "root1234",
-    "database": "TutorialDB",
+    "database": "Gergarage",
     "host": "127.0.0.1",
     "dialect": "mysql"
   },

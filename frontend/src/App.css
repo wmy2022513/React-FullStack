@@ -242,7 +242,8 @@ select {
 }
 
 .booking {
-  width: 1300px;
+
+  width: 1000px; 
   height: 100px;
   border-radius: 10px;
   display: flex;
@@ -250,10 +251,11 @@ select {
   margin-top: 50px;
   border: 1px solid lightgray;
   font-family: Arial, Helvetica, sans-serif;
+  box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
 
-  box-shadow: rgba(99,99,99,0.2) 0px 2px 8px 0px;
 }
 .booking .title {
+  /* width: max-content; */
   flex: 10%;
   border-bottom: 1px solid lightgray;
   background-color: rgb(30, 188, 255);
@@ -263,6 +265,7 @@ select {
 }
 
 .booking .body {
+  /* width: max-content; */
   flex: 15%;
   display: grid;
   place-content: center;
