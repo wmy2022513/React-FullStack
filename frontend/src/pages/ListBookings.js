@@ -26,8 +26,8 @@ function ListBookings() {
       }
     }  
     fetchBookedData();
-  }, []);
-console.log(authState.username)
+  }, [authState.username]);
+// console.log(authState.username)
   return (
     <div>
       {listOfBookings.map((value, key) => {

@@ -62,7 +62,7 @@ function CreateBookings() {
       }
     };
     fetchExistingData();
-  }, [])
+  }, [authState.username])
 
   const initialValues = {
     username: "",

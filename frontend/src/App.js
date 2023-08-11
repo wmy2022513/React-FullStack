@@ -53,7 +53,8 @@ function App() {
       status: false,
     });
     alert("You've already log out");
-    
+    window.location.href = "/"; //route back to the homepage
+
   };
 
   return (
@@ -63,8 +64,6 @@ function App() {
           <div className="navbar">
             <div className="links">
               <Link to="/"> HomePage </Link>
-              {/* <Link to="/createpost"> Create A Post </Link> */}
-              
               {authState.status && (
                 <>
                   <Link to="/createbookings">Book A Service</Link>

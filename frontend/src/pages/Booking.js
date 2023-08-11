@@ -1,7 +1,7 @@
 import React, {useState, useEffect, useRef, useContext} from "react";
 import {useParams} from "react-router-dom";
 import axios from "axios";
-import {Formik, Form, Field} from "formik";
+import {Formik, Form } from "formik";
 import * as Yup from "yup";
 import {useNavigate} from "react-router-dom";
 import CustomSelect from "../components/CustomSelect";
@@ -13,16 +13,13 @@ function Booking() {
   let {id} = useParams();
   const {authState} = useContext(AuthContext);
   const [bookingObject, setBookingObject] = useState({});
-  const [editMode, setEditMode] = useState(false);
-  const [addedItem, setAddedItem] = useState("");
+
   const buttonListRef = useRef(null);
   const [selectedButton, setSelectedButton] = useState(bookingObject.service_status);//if none of the button is selected
-  const [selectedOption, setSelectedOption] = useState("");
-  const [dropdownForms, setDropdownForms] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
+
   const [supplies, setSupplies] = useState([]);
-  const [selectedSupplies, setSelectedSupplies] = useState("");
-  const [existingData, setExistingData] = useState([]);
+ 
+  // const [existingData, setExistingData] = useState([]);
   const [customSelects, setCustomSelects] = useState([]);
 
 
@@ -52,12 +49,23 @@ function Booking() {
     setCustomSelects(updatedSelects);
   };
 
-  // const handleSuppliesChange = (e) => {
-  //   const selectedSupplies = e.target.value;
-
-  //   setSelectedSupplies(selectedSupplies);
-
-  // }
+    useEffect(() => {
+      const fetchBookedData = async () => {
+        try {
+          const response = await axios.get(
+            `http://localhost:3001/listbookings/user/${authState.username}`
+          );
+          // .then((response) => {
+          //   console.log(response.data);
+          // setListofBookings(response.data);
+          // });
+          console.log(response);
+        } catch (error) {
+          console.error("Error while fetching data:", error);
+        }
+      };
+      fetchBookedData();
+    }, [authState.username]);
 
   useEffect(() => {
     const fetchSuppliesListAndFee = async () => {
@@ -74,7 +82,6 @@ function Booking() {
       // console.log(response.data);
       setBookingObject(response.data);
       // console.log(bookingObject)
-      setIsLoading(false);
     });
   }, [id]);
 
@@ -87,7 +94,7 @@ function Booking() {
             `http://localhost:3001/addsupplies/byinvoiceid/${bookingObject.invoice_id}`
           );
           console.log(response.data);
-          setExistingData(response.data);
+          // setExistingData(response.data);
           setCustomSelects(response.data.map((data) => data.item));
         }
       } catch (error) {
@@ -111,43 +118,12 @@ function Booking() {
     // console.log(clickedButtonId);
   };
 
-  const handleOptionChange = (event) => {
-    setSelectedOption(event.target.value);
-  };
-
-  const handleAddDropdown = () => {
-    // Create a new dropdown menu form with the hardcoded options
-    const newDropdownForm = (
-      <>
-        <select value={selectedOption} onChange={handleOptionChange}>
-          {supplies.map((option) => (
-            <option key={option.id} value={option.item}>
-              {option.item}
-            </option>
-          ))}
-        </select>
-        <button onClick={() => handleRemoveDropdown(dropdownForms.length)}>
-          Remove
-        </button>
-      </>
-    );
-
-    // Add the new dropdown form to the state
-    setDropdownForms((prevForms) => [...prevForms, newDropdownForm]);
-  };
-  const handleRemoveDropdown = (formIndex) => {
-    // Remove the dropdown form with the specified index from the state
-    setDropdownForms((prevForms) =>
-      prevForms.filter((form, index) => index !== formIndex)
-    );
-  };
 
 
   const applyChanges = () => {
     const confirmed = window.confirm("Are you sure you want to apply changes?");
         // console.log(bookingObject.service_status);
         
-
     if (confirmed) {
       axios.put(`http://localhost:3001/bookings/byId/${id}`, {
         service_status: selectedButton ,
@@ -163,7 +139,6 @@ function Booking() {
       applyChanges();
 
       const pricesResponse = await axios.get("http://localhost:3001/supplies");
-
       // Map the prices data to an object with item names as keys and prices as values
       const pricesMap = {};
       pricesResponse.data.forEach((item) => {

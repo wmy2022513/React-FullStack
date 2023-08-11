@@ -27,6 +27,7 @@ function Login() {
           status: true,
         });
         navigate("/"); //route back to homepage
+        window.location.reload(); // reload when logged in, in order to load authState 
       }
     });
   };
