@@ -13,21 +13,18 @@ function ListBookings() {
   useEffect(() => {
     const fetchBookedData = async () => {
       try {
-             const response = await axios.get(
-               `http://localhost:3001/listbookings/user/${authState.username}`
-             );
-        // .then((response) => {
-        //   console.log(response.data);
-          setListofBookings(response.data);
-        // });
-        console.log(response)
+        const response = await axios.get(
+          `http://localhost:3001/listbookings/user/${authState.username}`
+        );
+        console.log(response);
+        setListofBookings(response.data);
       } catch (error) {
-        console.error("Error while fetching data:",error)
+        console.error("Error while fetching data:", error);
       }
-    }  
+    };
     fetchBookedData();
   }, [authState.username]);
-// console.log(authState.username)
+
   return (
     <div>
       {listOfBookings.map((value, key) => {

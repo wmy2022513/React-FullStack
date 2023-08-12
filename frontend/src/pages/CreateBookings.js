@@ -19,54 +19,53 @@ function CreateBookings() {
   const [selectedYear, setSelectedYear] = useState("");
   const [selectedEngine, setSelectedEngine] = useState("");
   const [selectedDate, setSelectedDate] = useState(new Date());
-  const [newBookId,setNewBookId] = useState("");
+  const [newBookId, setNewBookId] = useState("");
   const [serviceDetails, setServiceDetails] = useState([]);
   const [selectedService, setSelectedService] = useState("");
   const [selectedServiceName, setSelectedServiceName] = useState("");
   const [selectedServiceFee, setSelectedServiceFee] = useState(0);
   const {authState} = useContext(AuthContext);
   const [initialValuesLoaded, setInitialValuesLoaded] = useState(false);
-  
+
   let navigate = useNavigate();
 
-
-  useEffect(()=>{
+  useEffect(() => {
     const fetchExistingData = async () => {
-      try{
+      try {
         const response = await axios.get(
           `http://localhost:3001/bookings/${authState.username}`
         );
         console.log(response.data);
         // setExistingData(response.data); //Store fetched data in existingData state
-          if (response.data.length > 0) {
-            const lastSessionData = response.data[response.data.length - 1];
-            setFetchedData(lastSessionData); // Store the fetched data in the state
-            //set dropdown menus value
-            // setCustomerName(lastSessionData.customerName)
-            setVehicleType(lastSessionData.vehicleType)
-            setSelectedBrand(lastSessionData.vehicleBrand)
-            setSelectedModel(lastSessionData.model)
-            setSelectedYear(lastSessionData.year)
-            setSelectedEngine(lastSessionData.engineType)
-            setSelectedService(
-              `${lastSessionData.service} - €${lastSessionData.serviceFee}`
-            );
-            setSelectedServiceName(lastSessionData.service);
-            setSelectedServiceFee(lastSessionData.serviceFee)
-            setSelectedDate(lastSessionData.selectedDate)
-            setInitialValuesLoaded(true);
-            console.log(lastSessionData);
-          }
-      } catch(error) {
+        if (response.data.length > 0) {
+          const lastSessionData = response.data[response.data.length - 1];
+          setFetchedData(lastSessionData); // Store the fetched data in the state
+          //set dropdown menus value
+          // setCustomerName(lastSessionData.customerName)
+          setVehicleType(lastSessionData.vehicleType);
+          setSelectedBrand(lastSessionData.vehicleBrand);
+          setSelectedModel(lastSessionData.model);
+          setSelectedYear(lastSessionData.year);
+          setSelectedEngine(lastSessionData.engineType);
+          setSelectedService(
+            `${lastSessionData.service} - €${lastSessionData.serviceFee}`
+          );
+          setSelectedServiceName(lastSessionData.service);
+          setSelectedServiceFee(lastSessionData.serviceFee);
+          setSelectedDate(lastSessionData.selectedDate);
+          setInitialValuesLoaded(true);
+          console.log(lastSessionData);
+        }
+      } catch (error) {
         console.error("Error while fetching existing data:", error);
       }
     };
     fetchExistingData();
-  }, [authState.username])
+  }, [authState.username]);
 
   const initialValues = {
     username: "",
-    customerName: "" ,
+    customerName: "",
     email: "",
     phoneNumber: "",
     licenseDetails: "",
@@ -94,7 +93,6 @@ function CreateBookings() {
   const handleSelectChange = (event) => {
     const selectedOption = event.target.value;
     setVehicleType(selectedOption);
-
   };
 
   const handleBrandChange = (event) => {
@@ -105,21 +103,20 @@ function CreateBookings() {
 
   const handleModelChange = (event) => {
     const selectedModel = event.target.value;
-    setSelectedModel(selectedModel)
-    console.log(selectedModel)
-  }
+    setSelectedModel(selectedModel);
+    console.log(selectedModel);
+  };
 
   const handleSelectedYear = (e) => {
     const selectedYears = e.target.value;
     setSelectedYear(selectedYears);
-    
-  }
+  };
   const handleSelectedEngine = (e) => {
-    const selectedEngines = e.target.value
+    const selectedEngines = e.target.value;
     setSelectedEngine(selectedEngines);
-  }
-  
-  //deal with the selected STRING type service splitting to service name and fee 
+  };
+
+  //deal with the selected STRING type service splitting to service name and fee
   const handleServiceChange = (event) => {
     const selectedService = event.target.value; //return ex.Annual Service - €200
 
@@ -144,7 +141,8 @@ function CreateBookings() {
     }
   };
 
-  useEffect(() => { // get from external API
+  useEffect(() => {
+    // get from external API
     const fetchMotorModels = async (selectedModel) => {
       const options = {
         method: "GET",
@@ -170,7 +168,8 @@ function CreateBookings() {
     fetchMotorModels(selectedBrand);
   }, [selectedBrand]);
 
-  useEffect(() => { // requesting data from internal API
+  useEffect(() => {
+    // requesting data from internal API
 
     const fetchBookedData = async () => {
       await axios.get("http://localhost:3001/bookings").then((response) => {
@@ -179,7 +178,6 @@ function CreateBookings() {
         if (response.data.length === 0) {
           setNewBookId("GGRSVC001");
         } else {
-
           let returning = response.data;
           //retrive booked data and assign a new invoice_id
           let getTopPosition = returning.length - 1;
@@ -218,16 +216,13 @@ function CreateBookings() {
         console.log(response.data);
         setServiceDetails(response.data);
       });
-    }
+    };
 
     fetchServiceListAndFee();
-
   }, []);
 
-
-
-
-  const validationSchema = Yup.object().shape({});
+  const validationSchema = Yup.object().shape({}); 
+  //validation for Formik, need to make it up if have time
 
   const onSubmit = async (data) => {
     //Sending POST method then write data into database with API
@@ -239,18 +234,20 @@ function CreateBookings() {
     data.service = selectedServiceName; // Add selected service name to the data object
     data.serviceFee = selectedServiceFee; // Add selected service fee to the data object
     data.username = authState.username;
-        const formData = {
-          ...data,
-          invoice_id: newBookId,
-        };
+    const formData = {
+      ...data,
+      invoice_id: newBookId,
+    };
     try {
-      await axios.post("http://localhost:3001/bookings", formData,{
-        headers: {
-          accessToken: localStorage.getItem("accessToken"),
-        }
-      }).then(() => {
-        // console.log(data);
-      });
+      await axios
+        .post("http://localhost:3001/bookings", formData, {
+          headers: {
+            accessToken: localStorage.getItem("accessToken"),
+          },
+        })
+        .then(() => {
+          // console.log(data);
+        });
       alert("Booked Successfully");
       navigate("/");
     } catch (error) {
@@ -302,41 +299,13 @@ function CreateBookings() {
       setMotorBrands(res.data);
     });
 
-
-
     const currentYear = new Date().getFullYear();
     const yearOptions = [];
     for (let year = currentYear; year >= 1990; year--) {
       yearOptions.push(year);
     }
     setYear(yearOptions);
-
-    
   }, []);
-
-
-
-
-        // const initialValues = {
-        //   username: "",
-        //   customerName: "" || fetchedData.customerName, // Add customName field to initialValues
-        //   email: "" || fetchedData.email,
-        //   phoneNumber: "" || fetchedData.phoneNumber,
-        //   licenseDetails: "" || fetchedData.licenseDetails,
-        //   vehicleType: "",
-        //   vehicleBrand: "",
-        //   model: "",
-        //   year: "",
-        //   engineType: "",
-        //   service: "",
-        //   serviceFee: 0,
-        //   selectedDate: null,
-        //   selectedTime: "",
-        //   userDescription: "" || fetchedData.userDescription,
-        //   service_status: "Booked",
-        //   invoice_id: "GGRSVC001",
-        //   booking_seq: 1,
-        // };
 
   return (
     <div className="createBooking">
@@ -354,7 +323,6 @@ function CreateBookings() {
             name="customerName"
             placeholder="(Ex.Johnny)"
             // value={initialValues.customerName}
-
           />
           <label>Phone Number:</label>
           <Field
@@ -501,15 +469,12 @@ function CreateBookings() {
                 setSelectedDate(date);
               }
             }}
-            // dateFormat="dd/MM/yyyy"
             dateFormat="yyyy-MM-dd"
             placeholderText="Select a date"
             minDate={currentDate}
             filterDate={(date) => !isSunday(date)} // Disable Sundays
-            // showTimeSelect
-            // showDisabledMonthNavigation // Enable month navigation in disabled months
           />
-          {/* <DatePicker onChange={(event) => console.log(event)}></DatePicker> */}
+
           <CustomSelect
             label="Select A Time:"
             name="selectedTime"
